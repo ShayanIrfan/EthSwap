@@ -15,6 +15,7 @@ class App extends Component {
       ethSwap: {},
       tokenBalance: '100',
       ethBalance: '0',
+      currentForm: 'buy',
       loading: true
     };
   }
@@ -53,8 +54,6 @@ class App extends Component {
       window.alert("EthSwap contract not deployed to detected network");
     }
 
-    console.log(this.state.ethSwap)
-
     this.setState({ loading: false });
   }
 
@@ -71,9 +70,22 @@ class App extends Component {
 
   buyTokens = (ethAmount) => {
     this.setState({ loading: true });
-    this.state.ethSwap.methods.buyTokens().send({ from: this.state.account, value: ethAmount }).on('transactionHash', (hash) => {
-      this.setState({ loading: false });
+    this.state.ethSwap.methods.buyTokens().send({ from: this.state.account, value: ethAmount }).on('transactionHash', () => {
+      this.loadBlockchainData();
     });
+  }
+
+  sellTokens = (tokenAmount) => {
+    this.setState({ loading: true })
+    this.state.token.methods.approve(this.state.ethSwap._address, tokenAmount).send({ from: this.state.account }).on('transactionHash', (hash) => {
+      this.state.ethSwap.methods.sellTokens(tokenAmount).send({ from: this.state.account }).on('transactionHash', (hash) => {
+        this.loadBlockchainData();
+      });
+    });
+  }
+
+  setCurrentState = (state) => {
+    this.setState(state);
   }
 
   render() {
@@ -87,7 +99,14 @@ class App extends Component {
                 {this.state.loading ?
                   <p id="loader" className="text-center">loading</p>
                   :
-                  <Main ethBalance={this.state.ethBalance} tokenBalance={this.state.tokenBalance} buyTokens={this.buyTokens} />}
+                  <Main
+                    ethBalance={this.state.ethBalance}
+                    tokenBalance={this.state.tokenBalance}
+                    buyTokens={this.buyTokens}
+                    sellTokens={this.sellTokens}
+                    setCurrentState={this.setCurrentState} 
+                    currentForm={this.state.currentForm}/>
+                }
               </div>
             </main>
           </div>
