@@ -47,7 +47,7 @@ contract EthSwap {
         // Calculate the amount of Ether to buy
         uint ethAmount = _amount / rate;
         
-        // Require that EthSwap has enough tokens
+        // Require that EthSwap has enough ether
         require(address(this).balance >= ethAmount); 
 
         // Perform sale
