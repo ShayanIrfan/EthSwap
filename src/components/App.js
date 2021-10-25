@@ -13,7 +13,7 @@ class App extends Component {
       account: '',
       token: {},
       ethSwap: {},
-      tokenBalance: '100',
+      tokenBalance: '0',
       ethBalance: '0',
       currentForm: 'buy',
       loading: true
